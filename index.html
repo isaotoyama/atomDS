@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta name="description" content="ATOM — a composable, accessible React design system built on Atomic Design." />
+    <title>ATOM — React Design System</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem('atom-theme') === 'light' ? 'light' : 'dark'; }
+      catch { document.documentElement.dataset.theme = 'dark'; }
+    </script>
+    <!-- Visible startup fallback: a failed React import never leaves an empty screen. -->
+    <style>
+      #atom-boot-screen { box-sizing:border-box; min-height:100vh; width:100%; display:grid; place-items:center;
+        padding:28px; background:#090e1b; color:#eef3fc; font:16px/1.6 system-ui,-apple-system,sans-serif; }
+      #atom-boot-screen .boot-card { max-width:560px; width:100%; border:1px solid #33425d;
+        background:#111827; border-radius:16px; padding:30px; box-shadow:0 20px 65px #0004; }
+      #atom-boot-screen h1 { font-size:26px; margin:0 0 10px; letter-spacing:-.03em; }
+      #atom-boot-screen p { color:#aebbd0; margin:0 0 13px; }
+      #atom-boot-screen code, #atom-boot-screen pre { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+      #atom-boot-screen pre { overflow-x:auto; white-space:pre-wrap; word-break:break-word; border-radius:8px;
+        background:#090e1b; padding:15px; font-size:13px; color:#dce7fc; }
+      #atom-boot-screen a { color:#8fb3ff; }
+      #atom-boot-screen .boot-dot { display:inline-block; width:10px; height:10px; border-radius:50%;
+        margin-right:10px; background:#528aff; box-shadow:0 0 0 4px #528aff22; }
+      #atom-boot-screen .boot-note { font-size:13px; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root">
+      <div id="atom-boot-screen" role="status" aria-live="polite">
+        <div class="boot-card">
+          <h1><span class="boot-dot"></span>Starting ATOM…</h1>
+          <p id="atom-boot-message">Loading the React component library.</p>
+          <pre>npm install
+npm run dev</pre>
+          <p class="boot-note">Open the development URL printed in your terminal (usually http://localhost:5173/). Do not open index.html directly.</p>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const root = document.getElementById('root');
+        const message = document.getElementById('atom-boot-message');
+        function showFailure(detail) {
+          if (!root || !document.getElementById('atom-boot-screen')) return;
+          const heading = root.querySelector('h1');
+          if (heading) heading.textContent = 'ATOM could not start';
+          if (message) message.textContent = detail;
+        }
+        if (window.location.protocol === 'file:') {
+          showFailure('This is a Vite + React project. Opening index.html as a local file cannot run its TypeScript modules. Use npm run dev instead.');
+        } else {
+          window.addEventListener('error', function (event) {
+            showFailure(event.message || 'A JavaScript resource failed to load. Check your browser console and the Vite terminal.');
+          }, true);
+          window.addEventListener('unhandledrejection', function (event) {
+            const reason = event.reason;
+            showFailure(reason && reason.message ? reason.message : 'A startup promise failed. Check the browser console.');
+          });
+          window.setTimeout(function () {
+            showFailure('The React application did not finish loading. Check that npm install succeeded, run npm run dev, and inspect the browser console for errors.');
+          }, 8000);
+        }
+      })();
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
